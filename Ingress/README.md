@@ -6,6 +6,12 @@ To get started, you will need to install the nginx-ingress controller in your Ku
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+OR USE helm
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install [RELEASE_NAME] ingress-nginx/ingress-nginx -ns dev
 ```
 
 This will deploy the nginx-ingress controller as a Deployment in your cluster.
@@ -13,7 +19,10 @@ This will deploy the nginx-ingress controller as a Deployment in your cluster.
 ## Create Deployments
 Next, you will need to create some sample Deployments to route traffic to. Run the following commands to create the Deployments:
 
-```
+# Add kubernetes-dashboard repository
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+# Deploy a Helm Release named "kubernetes-dashboard" using the kubernetes-dashboard chart
+hhelm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace dev -f k8s-values
 kubectl create deploy sample-1 --image=devopsprosamples/next-path-sample-1
 kubectl create deploy sample-2 --image=devopsprosamples/next-path-sample-2
 kubectl create deploy sample-3 --image=devopsprosamples/next-sample-1
@@ -48,6 +57,18 @@ If you want to use HTTPS with your Ingress, you will need to install a certifica
 
 ```
 kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
+
+or use helm 
+
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+#kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.3/cert-manager.crds.yaml
+helm install \
+  cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.13.3 \
+  --set installCRDs=true
 ```
 
 This will install the cert-manager as a Deployment in your cluster.
